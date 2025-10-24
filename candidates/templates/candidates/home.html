@@ -226,6 +226,8 @@
             {% endfor %}
         </ul>
         <p style="text-align: right;"><strong>إجمالي الأصوات:</strong> {{ total_votes }}</p>
+        {% else %}
+            <p style="text-align: right;">لا يوجد أصوات مسجلة بعد.</p>
         {% endif %}
     {% else %}
         {% if voting_closed %}
@@ -233,7 +235,7 @@
                 انتهت فترة التصويت. لم يعد بالإمكان التصويت أو تعديل الأصوات بعد {{ deadline }}.
             </div>
         {% else %}
-            {% if voted_for_name %}
+            {% if has_voted and voted_for_name %}
             <p><strong>لقد أدليت بصوتك سابقاً لصالح {{ voted_for_name }}. يمكنك تحديث اختيارك أدناه حتى {{ deadline }}:</strong></p>
             {% endif %}
         {% endif %}
@@ -244,10 +246,10 @@
             {% for item in candidates_with_votes %}
             <div class="candidate-card">
                 <input type="radio" name="vote"
-                       value="{{ item.candidate.id }}"
-                       id="candidate{{ item.candidate.id }}"
-                       {% if item.candidate.id == voted_candidate_id %}checked{% endif %}
-                       {% if voting_closed %}disabled{% endif %}>
+                        value="{{ item.candidate.id }}"
+                        id="candidate{{ item.candidate.id }}"
+                        {% if item.candidate.id == voted_candidate_id %}checked{% endif %}
+                        {% if voting_closed %}disabled{% endif %}>
                 <label for="candidate{{ item.candidate.id }}">
                     {% if item.candidate.image %}
                     <img src="{{ item.candidate.image.url }}" alt="{{ item.candidate.name }}" class="candidate-photo">
