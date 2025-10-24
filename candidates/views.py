@@ -37,7 +37,7 @@ def submit_vote(request):
             return redirect('home')
 
         # Handle logged in users
-        if user:
+        if user and user.is_authenticated: # Explicitly check for is_authenticated again just in case
             # We use update_or_create to allow users to change their vote
             vote_obj, created = Vote.objects.update_or_create(
                 user=user,
@@ -49,6 +49,9 @@ def submit_vote(request):
                 session_key=session_key,
                 defaults={'candidate': candidate}
             )
+            # Store the name in session for anonymous users to show 'voted for' message (optional but consistent)
+            request.session['voted_for'] = candidate.name
+
 
         if created:
             messages.success(request, f"تم تسجيل صوتك لصالح {candidate.name}.")
@@ -96,40 +99,71 @@ def candidate_results(request):
 
 
 
-@login_required
 def home(request):
     """Main election page with voting or results depending on role."""
+    # Ensure session key exists for anonymous voting/tracking
     if not request.session.session_key:
         request.session.create()
 
     user = request.user
-    is_admin = user.is_staff or user.is_superuser
-    is_candidate = hasattr(user, 'candidate')
+    is_admin = user.is_authenticated and (user.is_staff or user.is_superuser) # Check authentication before staff/superuser
+    is_candidate = user.is_authenticated and hasattr(user, 'candidate')
 
     has_voted = False
     voted_candidate_id = None
-    voted_for_name = request.session.get('voted_for')
+    voted_for_name = None 
 
-    if not is_admin:
-        vote_obj = Vote.objects.filter(user=user).first()
+    # Determine if the user/session has voted
+    if user.is_authenticated:
+        vote_obj = Vote.objects.filter(user=user).select_related('candidate').first()
         if vote_obj:
             has_voted = True
             voted_candidate_id = vote_obj.candidate.id
+            voted_for_name = vote_obj.candidate.name
+    else:
+        # Anonymous user voting check
+        session_key = request.session.session_key
+        vote_obj = Vote.objects.filter(session_key=session_key, user__isnull=True).select_related('candidate').first()
+        if vote_obj:
+            has_voted = True
+            voted_candidate_id = vote_obj.candidate.id
+            voted_for_name = vote_obj.candidate.name
+
 
     deadline = get_aware_deadline()
     now = timezone.now()
     voting_closed = now > deadline
 
-    candidates_data = Candidate.objects.all().order_by('name')
+    # 1. Annotate candidates with vote counts
+    candidates_with_counts = Candidate.objects.annotate(vote_count=Count('votes')).order_by('name')
     total_votes = Vote.objects.count()
 
+    candidates_data = []
+
+    # 2. Prepare context data (Crucial Fix for Admin Results)
+    # The structure depends on whether the user is an admin or a regular voter
+    if is_admin:
+        # Admin gets full results with counts and percentages
+        safe_total_votes = total_votes if total_votes > 0 else 1
+        
+        for c in candidates_with_counts:
+            percentage = round((c.vote_count / safe_total_votes) * 100, 1)
+            candidates_data.append({
+                'candidate': c,
+                'vote_count': c.vote_count,
+                'vote_percentage': percentage,
+            })
+    else:
+        # Regular users only need the candidate object for voting form
+        candidates_data = [{'candidate': c} for c in candidates_with_counts]
+        
     context = {
-        'candidates_with_votes': [{'candidate': c} for c in candidates_data],
+        'candidates_with_votes': candidates_data,
         'total_votes': total_votes,
         'has_voted': has_voted,
         'is_admin': is_admin,
         'is_candidate': is_candidate,
-        'voted_for_name': voted_for_name,
+        'voted_for_name': voted_for_name, # Use the determined name
         'voted_candidate_id': voted_candidate_id,
         'voting_closed': voting_closed,
         'deadline': deadline.date(),
@@ -153,10 +187,8 @@ def login_view(request):
             login(request, user)
             messages.success(request, f"مرحبًا بعودتك، {user.username}!")
 
-            if hasattr(user, 'candidate'):
-                return redirect('home')  # candidate now goes to home
-            else:
-                return redirect('home')
+            # Both candidates and regular users go to home after login
+            return redirect('home')
         else:
             messages.error(request, "اسم المستخدم أو كلمة المرور غير صحيحة.")
 
@@ -183,6 +215,7 @@ def all_users_list(request):
     # Fetch all User objects. We use select_related('userprofile') to efficiently 
     # fetch the phone_number data (from the UserProfile table) in the same query.
     # We also prefetch_related('candidate') to check if the user is a candidate easily.
+    # Note: userprofile must be a OneToOneField from CustomUser.
     all_users = CustomUser.objects.filter(is_superuser=False).select_related('userprofile').prefetch_related('candidate').order_by('username')
     
     context = {
