@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>قائمة جميع المستخدمين</title>
+    <style>
+        body { font-family: Tahoma, sans-serif; background-color: #f8f9fa; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+        h1 { color: #007bff; text-align: center; margin-bottom: 30px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #dee2e6; padding: 12px; text-align: right; }
+        th { background-color: #e9ecef; color: #495057; font-weight: bold; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        .is-candidate { color: green; font-weight: bold; }
+        .not-available { color: #6c757d; font-style: italic; }
+        .back-link { display: block; text-align: center; margin-top: 20px; color: #007bff; text-decoration: none; }
+        .back-link:hover { text-decoration: underline; }
+
+        /* --- Mobile Responsiveness for Table --- */
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            .container { padding: 15px; }
+            
+            /* Make table columns less padded on small screens */
+            th, td {
+                padding: 8px; 
+                font-size: 0.9em;
+            }
+
+            /* Option 1: Stack table headers on mobile (more complex but better UX for many columns) 
+               - Not strictly needed here as there are only 3 columns, but good practice.
+            */
+            /* The simple 3-column table is generally OK, but here's a slight adaptation: */
+            table {
+                display: block;
+                overflow-x: auto; /* Allows horizontal scrolling for small screens */
+                white-space: nowrap; /* Ensures table doesn't break into awkward lines */
+            }
+            /* Reset to standard table display for headers/data */
+            thead, tbody, tr, th, td {
+                display: revert;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+        <h1>قائمة جميع المستخدمين</h1>
+        
+        {% if all_users %}
+        <table>
+            <thead>
+                <tr>
+                    <th>الاسم (Username)</th>
+                    <th>رقم الهاتف (Phone Number)</th>
+                    <th>مرشح؟</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in all_users %}
+                <tr>
+                    <td>{{ user.username }}</td>
+                    
+                    <td>
+                        {# FIX: Wrap the phone number in a span that forces Left-to-Right (LTR) direction #}
+                        {% if user.userprofile and user.userprofile.phone_number %}
+                            <span style="unicode-bidi: bidi-override; direction: ltr;">
+                                {{ user.userprofile.phone_number }}
+                            </span>
+                        {% else %}
+                            <span class="not-available">غير متوفر</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if user.candidate %}
+                            <span class="is-candidate">نعم</span>
+                        {% else %}
+                            لا
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+            <p style="text-align: center;">لا يوجد مستخدمون لعرضهم.</p>
+        {% endif %}
+
+        <a href="{% url 'home' %}" class="back-link">العودة إلى الصفحة الرئيسية</a>
+    </div>
+</body>
+</html>

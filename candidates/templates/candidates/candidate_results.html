@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>نتائج الانتخابات</title>
+    <style>
+        body {
+            font-family: "Cairo", sans-serif;
+            background-color: #f0f4f8;
+            padding: 30px;
+            direction: rtl;
+        }
+        .container {
+            background-color: white;
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #007bff;
+            text-align: right;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        .logout-link {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+        .logout-link a {
+            color: purple;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .logout-link a:hover {
+            text-decoration: underline;
+        }
+        .result-card {
+            background-color: #f9fbfc;
+            border-right: 6px solid #28a745;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .self {
+            background-color: #e6f7ff;
+            border-right-color: #007bff;
+            gap: 15px;
+        }
+        .self strong {
+            color: #007bff;
+            font-size: 1.2em;
+        }
+        .candidate-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .candidate-photo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #007bff;
+            flex-shrink: 0;
+        }
+        .vote-stats {
+            color: #333;
+            font-weight: 600;
+            text-align: right;
+        }
+        .rank {
+            font-weight: bold;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="logout-link">
+        <a href="{% url 'logout' %}">تسجيل الخروج</a>
+    </div>
+
+    <h1>نتائج الانتخابات</h1>
+
+    {% for item in results %}
+    <div class="result-card {% if item.is_self %}self{% endif %}">
+        {% if item.is_self %}
+        <!-- Logged-in candidate -->
+        <div class="candidate-info">
+            {% if item.image %}
+                <img src="{{ item.image }}" alt="{{ item.name }}" class="candidate-photo">
+            {% endif %}
+            <strong>{{ item.name }}</strong>
+        </div>
+        <div class="vote-stats">
+            عدد الأصوات: {{ item.vote_count }}<br>
+            النسبة: {{ item.percentage }}%
+        </div>
+        {% else %}
+        <!-- Other candidates (hide name/image) -->
+        <div class="rank">
+            #{{ forloop.counter }}
+        </div>
+        <div class="vote-stats">
+            عدد الأصوات: {{ item.vote_count }}<br>
+            النسبة: {{ item.percentage }}%
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+
+    <p><strong>إجمالي الأصوات:</strong> {{ total_votes }}</p>
+    {% if user.is_authenticated and user.candidate %}
+    <div style="text-align:center; margin-top:20px;">
+        <a href="{% url 'all_users' %}" style="color:#007bff; font-weight:bold; text-decoration:none;">
+            عرض جميع المستخدمين وأرقام هواتفهم
+        </a>
+    </div>
+    {% endif %}
+
+</div>
+</body>
+</html>
