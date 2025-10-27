@@ -10,6 +10,8 @@
             background-color: #f0f4f8;
             direction: rtl;
             line-height: 1.7;
+            /* Add padding to the top of the body to prevent content from being hidden by the fixed bar */
+            padding-top: 100px; /* Adjust this value based on the height of the fixed bar */
         }
         .container {
             max-width: 800px;
@@ -40,6 +42,29 @@
         .login-link a:hover {
             text-decoration: underline;
         }
+
+        /* --- NEW STYLES for Fixed Button Bar --- */
+        .fixed-actions-bar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            z-index: 1000; /* Ensure it stays on top of other content */
+            background-color: #e6f7ff; /* Light background for visibility */
+            padding: 10px 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .fixed-actions-content {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            padding: 0 35px; /* Match container padding */
+        }
+        /* --- END NEW STYLES --- */
 
         /* Candidate Card Styles */
         .candidate-card {
@@ -85,10 +110,10 @@
             align-items: flex-start;
         }
 
-        /* NEW: Smaller photo size */
+        /* Smaller photo size */
         .candidate-photo {
-            width: 100px; /* Reduced width */
-            height: 120px; /* Reduced height */
+            width: 100px;
+            height: 120px;
             border-radius: 8px;
             object-fit: cover;
             border: 2px solid #007bff;
@@ -112,10 +137,8 @@
             margin-bottom: 10px;
             font-weight: 500;
         }
-        
-        /* --- NEW STYLES FOR COLLAPSIBLE BIO --- */
 
-        /* The wrapper is initially hidden with max-height: 0 */
+        /* COLLAPSIBLE BIO STYLES (from previous step) */
         .candidate-description-wrapper {
             max-height: 0;
             overflow: hidden;
@@ -123,13 +146,10 @@
             margin-top: 10px;
             padding-bottom: 5px;
         }
-
-        /* When expanded, show the full content */
         .candidate-description-wrapper.expanded {
-            max-height: 1000px; /* Large value to show content */
+            max-height: 1000px;
             transition: max-height 0.6s ease-in;
         }
-        
         .candidate-description {
             padding-top: 10px;
             border-top: 1px dashed #e9ecef;
@@ -140,8 +160,6 @@
             font-size: 1em;
             line-height: 1.8;
         }
-
-        /* The Read More button is styled as a small, simple link below the name/party */
         .read-more-btn {
             background: none;
             color: #007bff;
@@ -158,16 +176,15 @@
         .read-more-btn:hover {
             color: #0d6efd;
         }
-
-        /* --- END NEW STYLES --- */
-
-        /* Buttons and Messages styles remain the same for brevity */
+        
+        /* Buttons */
+        /* Adjusted margins to look better inside the fixed bar */
         .vote-btn,
         .results-btn {
             width: 180px;
             text-align: center;
-            margin-right: 10px;
-            margin-bottom: 10px;
+            margin-right: 0; /* Removed fixed margin-right */
+            margin-bottom: 0; /* Removed fixed margin-bottom */
             padding: 12px 25px;
             border-radius: 10px;
             font-weight: bold;
@@ -196,6 +213,8 @@
             background-color: #5a1a8e;
             transform: scale(1.03);
         }
+
+        /* Messages */
         .message, .warning {
             padding: 12px 18px;
             border-radius: 8px;
@@ -216,7 +235,10 @@
 
         /* Mobile Responsiveness */
         @media (max-width: 600px) {
-            body { padding: 15px; }
+            body { 
+                padding: 15px; 
+                padding-top: 130px; /* Increased top padding for mobile */
+            }
             .container { padding: 20px; }
             .candidate-inner {
                 flex-direction: column-reverse;
@@ -235,16 +257,40 @@
                 justify-content: center;
                 width: 100%;
             }
+            /* Buttons are now flexible in the fixed bar, but we ensure they take full width in mobile */
             .vote-btn,
             .results-btn {
                 width: 100%;
-                margin-right: 0;
-                text-align: center;
+                margin: 5px 0; /* Small vertical margin for separation */
+            }
+            .fixed-actions-content {
+                padding: 0 15px; /* Adjust padding for mobile */
+                flex-direction: column; /* Stack buttons vertically on mobile */
             }
         }
     </style>
 </head>
 <body>
+
+<div class="fixed-actions-bar">
+    <div class="fixed-actions-content">
+        {% if candidates_with_votes %}
+            <form method="POST" action="{% url 'submit_vote' %}" style="display:contents;">
+                {% csrf_token %}
+
+                {% if not voting_closed %}
+                    <button type="submit" class="vote-btn">صوّت</button>
+                {% endif %}
+                {% if is_candidate %}
+                    <a href="{% url 'candidate_results' %}" class="vote-btn">عرض نتائجي</a>
+                {% endif %}
+                {% if user.is_authenticated and user.candidate %}
+                    <a href="{% url 'all_users' %}" class="vote-btn">عرض جميع المستخدمين</a>
+                {% endif %}
+            </form>
+        {% endif %}
+    </div>
+</div>
 <div class="container">
     <div class="login-link">
         {% if user.is_authenticated %}
@@ -275,25 +321,10 @@
         {% endif %}
 
         {% if candidates_with_votes %}
-        <form method="POST" action="{% url 'submit_vote' %}">
-            {% csrf_token %}
-
-            <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px;">
-                {% if not voting_closed %}
-                    <button type="submit" class="vote-btn">صوّت</button>
-                {% endif %}
-                {% if is_candidate %}
-                    <a href="{% url 'candidate_results' %}" class="vote-btn">عرض نتائجي</a>
-                {% endif %}
-                {% if user.is_authenticated and user.candidate %}
-                    <a href="{% url 'all_users' %}" class="vote-btn">عرض جميع المستخدمين</a>
-                {% endif %}
-            </div>
-
             {% for item in candidates_with_votes %}
                 <div class="candidate-card">
                     <div class="radio-top">
-                        <input type="radio" name="vote"
+                        <input type="radio" name="vote" form="vote-form"
                                value="{{ item.candidate.id }}"
                                id="candidate{{ item.candidate.id }}"
                                {% if item.candidate.id == voted_candidate_id %}checked{% endif %}
@@ -324,7 +355,11 @@
                     </label>
                 </div>
             {% endfor %}
-        </form>
+            
+            <form method="POST" action="{% url 'submit_vote' %}" id="vote-form" style="display:none;">
+                {% csrf_token %}
+            </form>
+            
         {% else %}
             <p style="text-align: right;">لم يتم تسجيل مرشحين بعد.</p>
         {% endif %}
