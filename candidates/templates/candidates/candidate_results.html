@@ -115,13 +115,7 @@
     {% endfor %}
 
     <p><strong>إجمالي الأصوات:</strong> {{ total_votes }}</p>
-    {% if user.is_authenticated and user.candidate %}
-    <div style="text-align:center; margin-top:20px;">
-        <a href="{% url 'all_users' %}" style="color:#007bff; font-weight:bold; text-decoration:none;">
-            عرض جميع المستخدمين وأرقام هواتفهم
-        </a>
-    </div>
-    {% endif %}
+
 
 </div>
 </body>
