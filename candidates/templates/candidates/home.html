@@ -1,315 +1,274 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-    <meta charset="UTF-8">
-    <title>المرشحون للانتخابات</title>
-    <style>
-        body {
-            font-family: "Cairo", "Tahoma", sans-serif;
-            padding: 30px;
-            background-color: #f0f4f8;
-            direction: rtl;
-            line-height: 1.7;
-            /* Add padding to the top of the body to prevent content from being hidden by the fixed bar */
-            padding-top: 100px; /* Adjust this value based on the height of the fixed bar */
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 35px;
-            border-radius: 14px;
-            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            color: #007bff;
-            border-bottom: 2px solid #e9ecef;
-            padding-bottom: 10px;
-            margin-bottom: 25px;
-            text-align: right;
-            font-size: 1.8em;
-            font-weight: 700;
-        }
-        .login-link {
-            text-align: left;
-            margin-bottom: 20px;
-        }
-        .login-link a {
-            color: purple;
-            text-decoration: none;
-            font-weight: 600;
-        }
-        .login-link a:hover {
-            text-decoration: underline;
-        }
+<meta charset="UTF-8">
+<title>المرشحون للانتخابات</title>
+<style>
+/* Existing styles */
+body {
+    font-family: "Cairo", "Tahoma", sans-serif;
+    background-color: #f0f4f8;
+    direction: rtl;
+    padding: 20px;
+    padding-top: 30px; 
+    line-height: 1.5;
+}
 
-        /* --- NEW STYLES for Fixed Button Bar --- */
-        .fixed-actions-bar {
-            position: fixed;
-            top: 0;
-            right: 0;
-            left: 0;
-            z-index: 1000; /* Ensure it stays on top of other content */
-            background-color: #e6f7ff; /* Light background for visibility */
-            padding: 10px 0;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-        .fixed-actions-content {
-            max-width: 800px;
-            margin: 0 auto;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
-            padding: 0 35px; /* Match container padding */
-        }
-        /* --- END NEW STYLES --- */
+.container {
+    max-width: 780px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 15px 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
 
-        /* Candidate Card Styles */
-        .candidate-card {
-            background-color: #f9fbfc;
-            padding: 20px;
-            border-radius: 10px;
-            border-right: 6px solid #10A3D6;
-            margin-bottom: 25px;
-            display: flex;
-            flex-direction: column;
-            transition: background-color 0.3s;
-            position: relative;
-        }
-        .candidate-card:hover {
-            background-color: #e6f7ff;
-        }
+/* Fixed Header Bar (General cleanup) */
+.fixed-actions-bar {
+    position: fixed;
+    top: 0; right: 0; left: 0;
+    z-index: 1000;
+    background-color: #f0f4f8;
+    padding: 4px 0;
+    text-align: center;
+}
+.fixed-actions-content {
+    max-width: 780px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 15px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+h4 {
+    color: #10A3D6;
+    margin: 0;
+    font-size: 1.05em;
+    font-weight: 700;
+}
+.login-link a {
+    color: #10A3D6;
+    font-weight: 600;
+    text-decoration: none;
+}
+.login-link a:hover { text-decoration: underline; }
+.fixed-buttons-container {
+    display: flex;
+    gap: 6px;
+}
 
-        /* Radio button on top */
-        .radio-top {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 10px;
-            font-weight: bold;
-            color: #333;
-        }
-        .radio-top input[type="radio"] {
-            transform: scale(1.3);
-            cursor: pointer;
-        }
+/* Candidate Card */
+.candidate-card {
+    background: #f9fbfc;
+    padding: 6px 8px;
+    border-radius: 8px;
+    border-right: 3px solid #10A3D6;
+    margin-bottom: 6px;
+    display: flex;
+    flex-direction: column;
+    transition: background 0.3s;
+}
+.candidate-card:hover { background: #e8f6ff; }
 
-        /* Candidate info layout */
-        .candidate-inner {
-            display: flex;
-            align-items: flex-start;
-        }
-        label.candidate-inner {
-            display: flex;
-            flex: 1;
-            flex-direction: row-reverse;
-            gap: 15px;
-            cursor: pointer;
-            align-items: flex-start;
-        }
+/* Radio + title line - ADJUSTED FOR IN-CARD BUTTON */
+.radio-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; 
+    gap: 4px;
+    font-size: 0.85em;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 4px;
+}
+.radio-topic-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.radio-top input[type="radio"] {
+    transform: scale(0.95);
+}
 
-        /* Smaller photo size */
-        .candidate-photo {
-            width: 100px;
-            height: 120px;
-            border-radius: 8px;
-            object-fit: cover;
-            border: 2px solid #007bff;
-            flex-shrink: 0;
-        }
+/* New style for the per-card vote button */
+.card-vote-btn {
+    background-color: #007bff; 
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 2px 8px; 
+    font-size: 0.75em; 
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+    margin-right: 5px; 
+    flex-shrink: 0;
+}
+.card-vote-btn:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
 
-        .candidate-info {
-            color: #333;
-            text-align: right;
-            flex-grow: 1;
-        }
-        .candidate-info strong {
-            display: block;
-            color: #0d6efd;
-            font-size: 1.3em;
-            margin-bottom: 6px;
-        }
-        .candidate-info small {
-            color: #6c757d;
-            display: block;
-            margin-bottom: 10px;
-            font-weight: 500;
-        }
 
-        /* COLLAPSIBLE BIO STYLES (from previous step) */
-        .candidate-description-wrapper {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.4s ease-out;
-            margin-top: 10px;
-            padding-bottom: 5px;
-        }
-        .candidate-description-wrapper.expanded {
-            max-height: 1000px;
-            transition: max-height 0.6s ease-in;
-        }
-        .candidate-description {
-            padding-top: 10px;
-            border-top: 1px dashed #e9ecef;
-            line-height: 1.8;
-        }
-        .candidate-description p {
-            margin: 8px 0;
-            font-size: 1em;
-            line-height: 1.8;
-        }
-        .read-more-btn {
-            background: none;
-            color: #007bff;
-            border: none;
-            font-weight: bold;
-            cursor: pointer;
-            padding: 0;
-            margin-top: 5px;
-            font-size: 0.95em;
-            text-align: right;
-            display: block;
-            text-decoration: underline;
-        }
-        .read-more-btn:hover {
-            color: #0d6efd;
-        }
-        
-        /* Buttons */
-        /* Adjusted margins to look better inside the fixed bar */
-        .vote-btn,
-        .results-btn {
-            width: 180px;
-            text-align: center;
-            margin-right: 0; /* Removed fixed margin-right */
-            margin-bottom: 0; /* Removed fixed margin-bottom */
-            padding: 12px 25px;
-            border-radius: 10px;
-            font-weight: bold;
-            font-size: 1em;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            box-sizing: border-box;
-            transition: background-color 0.3s, transform 0.1s;
-        }
-        .vote-btn {
-            background-color: #10A3D6;
-            color: white;
-            border: none;
-        }
-        .vote-btn:hover {
-            background-color: #0c82ab;
-            transform: scale(1.03);
-        }
-        .results-btn {
-            background-color: purple;
-            color: white;
-            border: none;
-        }
-        .results-btn:hover {
-            background-color: #5a1a8e;
-            transform: scale(1.03);
-        }
+/* Candidate inner content */
+.candidate-inner {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: flex-start;
+    gap: 6px;
+}
+.candidate-photo {
+    width: 60px;
+    height: 72px;
+    border-radius: 4px;
+    border: 1px solid #10A3D6;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+.candidate-info {
+    flex-grow: 1;
+    text-align: right;
+}
+.candidate-info strong {
+    display: block;
+    font-size: 1em;
+    color: black;
+    margin-bottom: 0;
+}
 
-        /* Messages */
-        .message, .warning {
-            padding: 12px 18px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            text-align: right;
-            font-weight: 500;
-        }
-        .message {
-            background-color: #d1e7dd;
-            color: #0f5132;
-            border: 1px solid #badbcc;
-        }
-        .warning {
-            background-color: #f8d7da;
-            color: #842029;
-            border: 1px solid #f5c2c7;
-        }
+/* Bio summary + Read more inline */
+.bio-summary-wrapper {
+    display: block; 
+    text-align: right;
+    margin-top: 2px;
+}
+.bio-summary {
+    display: inline; 
+    max-width: calc(100% - 80px);
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+}
+.read-more-btn {
+    display: inline;
+    margin-left: 4px;
+    background: none;
+    color: #10A3D6;
+    border: none;
+    cursor: pointer;
+    font-size: 0.8em;
+    font-weight: bold;
+    padding: 0;
+    text-decoration: underline;
+}
+.read-more-btn:hover { color: #0d6efd; }
 
-        /* Mobile Responsiveness */
-        @media (max-width: 600px) {
-            body { 
-                padding: 15px; 
-                padding-top: 130px; /* Increased top padding for mobile */
-            }
-            .container { padding: 20px; }
-            .candidate-inner {
-                flex-direction: column-reverse;
-                align-items: center;
-            }
-            .candidate-photo {
-                width: 100%;
-                max-width: 100px;
-                height: 120px;
-                margin-bottom: 15px;
-            }
-            .candidate-info {
-                text-align: center;
-            }
-            .radio-top {
-                justify-content: center;
-                width: 100%;
-            }
-            /* Buttons are now flexible in the fixed bar, but we ensure they take full width in mobile */
-            .vote-btn,
-            .results-btn {
-                width: 100%;
-                margin: 5px 0; /* Small vertical margin for separation */
-            }
-            .fixed-actions-content {
-                padding: 0 15px; /* Adjust padding for mobile */
-                flex-direction: column; /* Stack buttons vertically on mobile */
-            }
-        }
-    </style>
+/* Expanded description */
+.candidate-description-wrapper {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-out;
+    margin-top: 2px;
+}
+.candidate-description-wrapper.expanded {
+    max-height: 1000px;
+}
+.candidate-description {
+    padding-top: 4px;
+    border-top: 1px dashed #e9ecef;
+    font-size: 0.85em;
+    line-height: 1.4;
+    white-space: normal; 
+}
+
+/* General Buttons */
+.vote-btn, .results-btn {
+    background-color: #10A3D6;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 4px 10px;
+    font-size: 0.8em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+    text-decoration: none; /* Make sure links look like buttons */
+}
+.vote-btn:hover, .results-btn:hover {
+    background-color: #0c82ab;
+    transform: scale(1.03);
+}
+
+/* Messages */
+.message, .warning {
+    padding: 6px 10px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    font-size: 0.9em;
+}
+.message {
+    background: #d1e7dd;
+    color: #0f5132;
+}
+.warning {
+    background: #f8d7da;
+    color: #842029;
+}
+
+/* Mobile tweaks */
+@media (max-width: 600px) {
+    body { padding: 10px; padding-top: 80px; }
+    .fixed-actions-content { flex-direction: column; gap: 4px; padding: 5px 10px; }
+    .fixed-buttons-container { flex-direction: column; }
+    .vote-btn, .results-btn { width: 100%; } 
+    .candidate-inner { flex-direction: column-reverse; align-items: center; }
+    .candidate-photo { width: 65px; height: 75px; }
+    .candidate-info { text-align: right; }
+    .bio-summary-wrapper { display: block; }
+    .bio-summary { white-space: nowrap; font-size: 0.8em; }
+    .read-more-btn { display: inline; }
+}
+</style>
 </head>
 <body>
 
 <div class="fixed-actions-bar">
     <div class="fixed-actions-content">
-        {% if candidates_with_votes %}
-            <form method="POST" action="{% url 'submit_vote' %}" style="display:contents;">
-                {% csrf_token %}
-
-                {% if not voting_closed %}
-                    <button type="submit" class="vote-btn">صوّت</button>
-                {% endif %}
+        <h4>المشاريع</h4>
+        <div class="fixed-buttons-container">
+            {% if user.is_authenticated %}
+                <a href="{% url 'home' %}" class="vote-btn">صفحة التصويت</a>
+                
                 {% if is_candidate %}
                     <a href="{% url 'candidate_results' %}" class="vote-btn">عرض نتائجي</a>
                 {% endif %}
-                {% if user.is_authenticated and user.candidate %}
+                {% if user.candidate %}
                     <a href="{% url 'all_users' %}" class="vote-btn">عرض جميع المستخدمين</a>
                 {% endif %}
-            </form>
-        {% endif %}
+            {% endif %}
+        </div>
+        <div class="login-link">
+            {% if user.is_authenticated %}
+                <a href="{% url 'logout' %}">تسجيل الخروج</a>
+            {% else %}
+                <a href="{% url 'login' %}">تسجيل دخول المرشح</a>
+            {% endif %}
+        </div>
     </div>
 </div>
+
 <div class="container">
-    <div class="login-link">
-        {% if user.is_authenticated %}
-            <a href="{% url 'logout' %}">تسجيل الخروج</a>
-        {% else %}
-            <a href="{% url 'login' %}">تسجيل دخول المرشح</a>
-        {% endif %}
-    </div>
-
-    <h1>المرشحون للانتخابات</h1>
-
     {% if messages %}
         {% for message in messages %}
             <div class="message">{{ message }}</div>
         {% endfor %}
     {% endif %}
 
-    {% if is_admin %}
-        {% else %}
+    {% if is_admin %}{% else %}
         {% if voting_closed %}
             <div class="warning">
                 انتهت فترة التصويت. لم يعد بالإمكان التصويت أو تعديل الأصوات بعد {{ deadline }}.
@@ -321,78 +280,107 @@
         {% endif %}
 
         {% if candidates_with_votes %}
+            
             {% for item in candidates_with_votes %}
-                <div class="candidate-card">
-                    <div class="radio-top">
-                        <input type="radio" name="vote" form="vote-form"
-                               value="{{ item.candidate.id }}"
-                               id="candidate{{ item.candidate.id }}"
-                               {% if item.candidate.id == voted_candidate_id %}checked{% endif %}
-                               {% if voting_closed %}disabled{% endif %}>
-                        <span>صوت لهذا المرشح</span>
-                    </div>
+                <form method="POST" action="{% url 'submit_vote' %}" id="vote-form-{{ item.candidate.id }}">
+                    {% csrf_token %}
+                    <input type="hidden" name="vote" value="{{ item.candidate.id }}">
 
-                    <label for="candidate{{ item.candidate.id }}" class="candidate-inner">
-                        {% if item.candidate.image %}
-                            <img src="{{ item.candidate.image.url }}" alt="{{ item.candidate.name }}" class="candidate-photo">
-                        {% endif %}
-                        <div class="candidate-info">
-                            <strong>{{ item.candidate.name }}</strong>
-                            <small>{{ item.candidate.party }}</small>
-                            
-                            <button type="button" class="read-more-btn"
-                                    id="read-more-btn-{{ item.candidate.id }}"
-                                    onclick="toggleReadMore('description-wrapper-{{ item.candidate.id }}', this)">
-                                اقرأ المزيد
-                            </button>
-                            
-                            <div id="description-wrapper-{{ item.candidate.id }}" class="candidate-description-wrapper">
-                                <div class="candidate-description">
-                                    {{ item.candidate.description|safe }}
+                    <div class="candidate-card">
+                        <div class="radio-top">
+                            <div class="radio-topic-wrapper">
+                                <input type="radio" name="selected_candidate"
+                                    value="{{ item.candidate.id }}"
+                                    id="candidate{{ item.candidate.id }}"
+                                    {% if item.candidate.id == voted_candidate_id %}checked{% endif %}
+                                    {% if voting_closed %}disabled{% endif %}>
+                                <span>صوت لهذا المشروع: {{ item.candidate.topic }}</span>
+                            </div>
+
+                            {% if not voting_closed %}
+                                <button type="submit" class="card-vote-btn" 
+                                        form="vote-form-{{ item.candidate.id }}"
+                                        {% if item.candidate.id == voted_candidate_id %}
+                                            style="background-color: #28a745;" /* Green if voted for */
+                                        {% endif %}>
+                                    صوّت الآن
+                                </button>
+                            {% endif %}
+                        </div>
+
+                        <label for="candidate{{ item.candidate.id }}" class="candidate-inner">
+                            <a href="{% url 'candidate_detail' item.candidate.id %}" style="text-decoration:none;">
+                                {% if item.candidate.image %}
+                                    <img src="{{ item.candidate.image.url }}" alt="{{ item.candidate.name }}" class="candidate-photo">
+                                {% endif %}
+                            </a>
+                            <div class="candidate-info">
+                                <strong>{{ item.candidate.name }}</strong>
+                                <div class="bio-summary-wrapper">
+                                    <span class="bio-summary">
+                                        {{ item.candidate.description|striptags|truncatechars:80 }}
+                                    </span>
+                                    <button type="button" class="read-more-btn"
+                                            id="read-more-btn-{{ item.candidate.id }}"
+                                            onclick="toggleReadMore('description-wrapper-{{ item.candidate.id }}', this)">
+                                        اقرأ المزيد
+                                    </button>
+                                </div>
+                                <div id="description-wrapper-{{ item.candidate.id }}" class="candidate-description-wrapper">
+                                    <div class="candidate-description">
+                                        {{ item.candidate.description|safe }}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </label>
-                </div>
-            {% endfor %}
-            
-            <form method="POST" action="{% url 'submit_vote' %}" id="vote-form" style="display:none;">
-                {% csrf_token %}
-            </form>
+                        </label>
+                    </div>
+                </form>
+                {% endfor %}
             
         {% else %}
-            <p style="text-align: right;">لم يتم تسجيل مرشحين بعد.</p>
+            <p style="text-align:right;">لم يتم تسجيل مرشحين بعد.</p>
         {% endif %}
     {% endif %}
 </div>
 
 <script>
-    /**
-     * Toggles the 'expanded' class on the description wrapper to show/hide the full content.
-     * @param {string} wrapperId - The ID of the .candidate-description-wrapper element.
-     * @param {HTMLElement} button - The 'اقرأ المزيد' button element.
-     */
-    function toggleReadMore(wrapperId, button) {
-        const wrapper = document.getElementById(wrapperId);
-        
-        // Find the specific card element to scroll to
-        const card = wrapper.closest('.candidate-card');
+function toggleReadMore(wrapperId, button) {
+    const wrapper = document.getElementById(wrapperId);
+    const card = wrapper.closest('.candidate-card');
+    const summary = button.previousElementSibling;
 
-        if (wrapper.classList.contains('expanded')) {
-            // Collapse
-            wrapper.classList.remove('expanded');
-            button.textContent = 'اقرأ المزيد';
-            button.style.textDecoration = 'underline'; // Add underline back
-
-            // Scroll the card back into view when collapsing
-            card.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
-        } else {
-            // Expand
-            wrapper.classList.add('expanded');
-            button.textContent = 'إخفاء التفاصيل';
-            button.style.textDecoration = 'none'; // Remove underline when expanded
-        }
+    if (wrapper.classList.contains('expanded')) {
+        wrapper.classList.remove('expanded');
+        button.textContent = 'اقرأ المزيد';
+        summary.style.display = 'inline';
+        card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+        wrapper.classList.add('expanded');
+        button.textContent = 'إخفاء التفاصيل';
+        summary.style.display = 'none';
     }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.read-more-btn').forEach(button => {
+        const wrapperId = button.id.replace('read-more-btn-', 'description-wrapper-');
+        const wrapper = document.getElementById(wrapperId);
+        // Check if description is present and not empty
+        if (wrapper && wrapper.querySelector('.candidate-description').textContent.trim() === "") {
+            button.closest('.bio-summary-wrapper').style.display = 'none';
+        }
+    });
+
+    // Optional: Add a visual indicator to the selected radio button on card click
+    document.querySelectorAll('.candidate-inner').forEach(label => {
+        label.addEventListener('click', function() {
+            const radio = this.closest('.candidate-card').querySelector('input[type="radio"]');
+            if (radio && !radio.disabled) {
+                radio.checked = true;
+            }
+        });
+    });
+});
 </script>
 </body>
 </html>
