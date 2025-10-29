@@ -14,7 +14,6 @@ class UserProfile(models.Model):
         return f"Profile for {self.user.username}"
 
 
-# 2. Candidate model uses the default User
 class Candidate(models.Model):
     user = models.OneToOneField(
         User,  # Use default User model
@@ -27,6 +26,10 @@ class Candidate(models.Model):
 
     name = models.CharField(max_length=100, default="Unknown Candidate")
     party = models.CharField(max_length=100, default="Independent")
+    
+    # ✅ ADD THIS NEW FIELD: topic
+    topic = models.CharField(max_length=100, default="General Topic", verbose_name="Main Topic") 
+    
     description = RichTextField(blank=True, verbose_name="Biography/Bio", default=" محتوى السيرة الذاتية هنا...")
     image = models.ImageField(upload_to='candidates/', blank=True, null=True)
     
